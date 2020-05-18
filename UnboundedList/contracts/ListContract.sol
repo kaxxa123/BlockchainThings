@@ -1,5 +1,17 @@
 pragma solidity ^0.5.0;
 
+//==========================================================
+// Author: Alexander Zammit
+// Date: 18th May 2020
+// LinkedIn: https://www.linkedin.com/in/alexzammit/
+//
+// This code is documented in the article:
+//
+// Designing an Unbounded List in Solidity
+// http://www.BlockchainThings.io/
+//
+//==========================================================
+
 contract ListContract {
 
     struct ListElement {

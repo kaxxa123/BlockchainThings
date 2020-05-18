@@ -1,3 +1,15 @@
+//==========================================================
+// Author: Alexander Zammit
+// Date: 18th May 2020
+// LinkedIn: https://www.linkedin.com/in/alexzammit/
+//
+// This code is documented in the article:
+//
+// Designing an Unbounded List in Solidity
+// http://www.BlockchainThings.io/
+//
+//==========================================================
+
 const ListContract = artifacts.require("ListContract")
 const truffleAssert = require('truffle-assertions');
 
@@ -122,8 +134,8 @@ contract('Testing List read', function (accounts) {
     it('should read list despite interleaving deletions', async () => {
         let list = await ListContract.deployed()
 
-        let doDel = async(rdCount, bkCount, next) => {
-            //insert deletions to cause failures
+        let flat = await pagedRead(list, 3, async(rdCount, bkCount, next) => {
+            //insert deletions to cause read failures
             if ((bkCount == 0) && (next == 10)) {
                 bDel = false;
                 await removeWrapper(list, 10)
@@ -132,13 +144,11 @@ contract('Testing List read', function (accounts) {
                 addrList.splice(10-1,1);
                 addrList.splice(7-1,1);
             }
-        }
-
-        let flat = await pagedRead(list, 3, doDel)
+        })
 
         //compare the output list with expected list
         assert((addrList.length === flat.length) && 
-        addrList.every((value, index) => value === flat[index]),
-        "Unexpected mistmatch in address list when page size is: " + pagesz);
+                addrList.every((value, index) => value === flat[index]),
+                "Unexpected mistmatch in address list when page size is: " + pagesz);
     });
 });
