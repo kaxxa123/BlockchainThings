@@ -8,7 +8,7 @@ pragma solidity ^0.5.0;
 // This code is documented in the article:
 //
 // Designing an Unbounded List in Solidity
-// http://www.BlockchainThings.io/
+// http://blockchainthings.io/article.aspx?i=4
 //
 //==========================================================
 
