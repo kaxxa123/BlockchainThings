@@ -170,13 +170,13 @@ contract ListContract {
 
     /// @dev Get id of first item in list
     /// @return id of first item
-    function firstItem() public view alwaysAccept returns (uint256) {
+    function firstItem() public view returns (uint256) {
         return items[0].next;
     }
 
     /// @dev Get id of last item in list
     /// @return id of last item
-    function lastItem() public view alwaysAccept returns (uint256) {
+    function lastItem() public view returns (uint256) {
         return items[0].prev;
     }
 

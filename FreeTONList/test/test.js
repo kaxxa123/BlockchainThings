@@ -36,13 +36,10 @@ async function main(client) {
     await list.add({addr: '0:0000000000000000000000000000000000000000000000000000000000000004'});
     await list.add({addr: '0:0000000000000000000000000000000000000000000000000000000000000005'});
 
-
-    let first = await list.firstItem()
-    let last = await list.lastItem()
+    let first = await list.firstItemLocal()
+    let last = await list.lastItemLocal()
     console.log(`First Item Id ${first.value0}`)
     console.log(`Last Item Id  ${last.value0}`)
-    // console.log('Next Item Id  ' + await list.nextItem())
-    // console.log('Total Items   ' + await list.totalItems())
     console.log();
 
     let id = Number(first.value0);
@@ -50,15 +47,13 @@ async function main(client) {
     await list.remove({id: (id+2)})
     await list.remove({id: (id+4)})
 
-    first = await list.firstItem()
-    last = await list.lastItem()
+    first = await list.firstItemLocal()
+    last = await list.lastItemLocal()
     console.log(`First Item Id ${first.value0}`)
     console.log(`Last Item Id  ${last.value0}`)
-    // console.log('Next Item Id  ' + await list.nextItem())
-    // console.log('Total Items   ' + await list.totalItems())
     console.log();
 
-    let listVals = await list.read({start: 0, toRead: 0})
+    let listVals = await list.readLocal({start: 0, toRead: 0})
     console.log(`Next Read Pos: ${listVals.next}`)
     console.log(`Addr List Out: ${listVals.addrList}`)
 }
