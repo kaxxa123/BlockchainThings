@@ -7,12 +7,15 @@ pragma solidity ^0.6.0;
 //
 // This code is being used to test the Free TON Solidity Compiler
 // Refer to articles:
-// http://blockchainthings.io/article.aspx?i=7
-// http://blockchainthings.io/article.aspx?i=5
+//      Deploying & Running Smart Contracts on TON OS
+//      http://blockchainthings.io/article.aspx?i=6
+//
+//      Running TON OS on Windows
+//      http://blockchainthings.io/article.aspx?i=5
 //
 // Also related is this article:
-// Designing an Unbounded List in Solidity
-// http://blockchainthings.io/article.aspx?i=4
+//      Designing an Unbounded List in Solidity
+//      http://blockchainthings.io/article.aspx?i=4
 //
 // Compilation command:
 // tondev sol ListContract.sol -l js -L deploy
