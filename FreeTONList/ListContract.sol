@@ -23,6 +23,9 @@ pragma solidity ^0.6.0;
 
 contract ListContract {
 
+    uint constant ERR_INVALID_ADDR = 101;
+    uint constant ERR_UNINT_ITEM = 102;
+
     struct ListElement {
         uint256 prev;           //Previous list item pointer
         uint256 next;           //Next list item pointer
@@ -63,7 +66,7 @@ contract ListContract {
     /// @param addr list item data
     function add(address addr) external alwaysAccept {
         //Validate item data
-        require(addr != address(0x0), 101, "Address cannot be zero");
+        require(addr != address(0x0), ERR_INVALID_ADDR, "Address cannot be zero");
 
         items[lastItem()].next = nextItem;
         items[nextItem] = ListElement(lastItem(), 0, addr);
@@ -82,7 +85,7 @@ contract ListContract {
 
         //Make sure we are deleting a valid item
         //Note this will also block deleting the root node (id == 0)
-        require(exists && (elem.addr != address(0x0)), 201, "Uninitialized Item cannot be deleted");
+        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item cannot be deleted");
 
         //Add log for deleted item
         emit EventItemDeleted(id, elem.addr);
@@ -108,11 +111,11 @@ contract ListContract {
     /// @param id element to be updated
     function update(uint256 id, address addr) external alwaysAccept {
         //Validate new item data
-        require(addr != address(0x0), 101, "Address cannot be zero");
+        require(addr != address(0x0), ERR_INVALID_ADDR, "Address cannot be zero");
 
         //Validate id is pointing to a valid list item element
         (bool exists, ListElement elem) = items.fetch(id);
-        require(exists && (elem.addr != address(0x0)), 101, "Uninitialized Item cannot be updated");
+        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item cannot be updated");
 
         //Update item data
         items[id].addr = addr;
@@ -139,7 +142,7 @@ contract ListContract {
         //Validate reading position
         //This can happen if an item is deleted while traversing the list
         (bool exists, ListElement elem) = items.fetch(itemPos);
-        require(exists && (elem.addr != address(0x0)), 101, "Uninitialized Item cannot be updated");
+        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item");
 
         //Determine number of elements to be returned
         //We count until:
