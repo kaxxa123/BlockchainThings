@@ -6,18 +6,25 @@ pragma solidity ^0.6.0;
 // LinkedIn: https://www.linkedin.com/in/alexzammit/
 //
 // This code is being used to test the Free TON Solidity Compiler
-// Refer to article:
-// http://blockchainthings.io/article.aspx?i=5
+// Refer to articles:
+//      Deploying & Running Smart Contracts on TON OS
+//      http://blockchainthings.io/article.aspx?i=6
 //
-// Source code originally documented in:
-// Designing an Unbounded List in Solidity
-// http://blockchainthings.io/article.aspx?i=4
+//      Running TON OS on Windows
+//      http://blockchainthings.io/article.aspx?i=5
+//
+// Also related is this article:
+//      Designing an Unbounded List in Solidity
+//      http://blockchainthings.io/article.aspx?i=4
 //
 // Compilation command:
 // tondev sol ListContract.sol -l js -L deploy
 //==========================================================
 
 contract ListContract {
+
+    uint constant ERR_INVALID_ADDR = 101;
+    uint constant ERR_UNINT_ITEM = 102;
 
     struct ListElement {
         uint256 prev;           //Previous list item pointer
@@ -35,25 +42,34 @@ contract ListContract {
     event EventItemAdded(uint256 indexed id, address addr);
     event EventItemDeleted(uint256 indexed id, address addr);
 
+    // Modifier that allows public function to accept all external calls.
+    // Related References:
+    // https://docs.ton.dev/86757ecb2/p/00f1c7-managing-gas-in-ton/t/82e97f
+    // https://docs.ton.dev/86757ecb2/p/7627c4-using-runlocal
+    modifier alwaysAccept {
+        tvm.accept();
+        _;
+    }
+
     /// @dev Initializes ListContract
     constructor() public {
+        tvm.accept();
+
         //Id zero is reserved.
         //First item to be created will have id 1
         nextItem = 1;
+        totalItems = 0;
+        items[0] = ListElement(0,0,address(0x0));
     }
 
     /// @dev Add list item.
     /// @param addr list item data
-    function add(address addr) external {
+    function add(address addr) external alwaysAccept {
         //Validate item data
-        require(addr != address(0x0), "Address cannot be zero");
+        require(addr != address(0x0), ERR_INVALID_ADDR, "Address cannot be zero");
 
-        ListElement storage prevElem = items[lastItem()];
-        ListElement storage newElem = items[nextItem];
-
-        prevElem.next = nextItem;
-        newElem.prev = lastItem();
-        newElem.addr = addr;
+        items[lastItem()].next = nextItem;
+        items[nextItem] = ListElement(lastItem(), 0, addr);
 
         lastItemSet(nextItem);
         nextItem += 1;
@@ -64,19 +80,18 @@ contract ListContract {
 
     /// @dev Remove list item with given id
     /// @param id element to be removed
-    function remove(uint256 id) external {
-        ListElement storage elem = items[id];
+    function remove(uint256 id) external alwaysAccept {
+        (bool exists, ListElement elem) = items.fetch(id);
 
-        //Make sure we are deleting a valid item i.e. an item that is actually in the list
+        //Make sure we are deleting a valid item
         //Note this will also block deleting the root node (id == 0)
-        require(elem.addr != address(0x0), "Uninitialized Item cannot be deleted");
+        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item cannot be deleted");
 
         //Add log for deleted item
         emit EventItemDeleted(id, elem.addr);
 
         //Update the previous list entry
-        ListElement storage prevElem = items[elem.prev];
-        prevElem.next = elem.next;
+        items[elem.prev].next = elem.next;
 
         //If deleted elem was the list tail than update lastItem
         //to point at the prev element
@@ -84,8 +99,7 @@ contract ListContract {
             lastItemSet(elem.prev);
         }
         else {
-            ListElement storage nextElem = items[elem.next];
-            nextElem.prev = elem.prev;
+            items[elem.next].prev = elem.prev;
         }
 
         //Delete element
@@ -95,16 +109,16 @@ contract ListContract {
 
     /// @dev Update list item with given id
     /// @param id element to be updated
-    function update(uint256 id, address addr) external {
+    function update(uint256 id, address addr) external alwaysAccept {
         //Validate new item data
-        require(addr != address(0x0), "Address cannot be zero");
+        require(addr != address(0x0), ERR_INVALID_ADDR, "Address cannot be zero");
 
         //Validate id is pointing to a valid list item element
-        ListElement storage elem = items[id];
-        require(elem.addr != address(0x0), "Uninitialized Item cannot be updated");
+        (bool exists, ListElement elem) = items.fetch(id);
+        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item cannot be updated");
 
         //Update item data
-        elem.addr = addr;
+        items[id].addr = addr;
     }
 
     /// @dev Reads up to <toRead> items starting from the element with id start
@@ -113,7 +127,7 @@ contract ListContract {
     /// @param start specify the starting id for reading items. start = 0 => list head
     /// @param toRead number of items to read. toRead = 0 => read all items up to the end
     /// @return addrList - an array of item data, next - next reading position (next == 0 indicates we reached the list end)
-    function read(uint256 start, uint256 toRead) external view returns (address[] memory addrList, uint256 next) {
+    function read(uint256 start, uint256 toRead) external view returns (address[] addrList, uint256 next) {
 
         //start = 0 => list head
         uint256 itemPos;
@@ -127,7 +141,8 @@ contract ListContract {
 
         //Validate reading position
         //This can happen if an item is deleted while traversing the list
-        require(items[itemPos].addr != address(0x0), "Invalid reading position.");
+        (bool exists, ListElement elem) = items.fetch(itemPos);
+        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item");
 
         //Determine number of elements to be returned
         //We count until:
@@ -155,6 +170,8 @@ contract ListContract {
         }
 
         next = itemPos;
+
+        return (addrList, next);
     }
 
     /// @dev Get id of first item in list
