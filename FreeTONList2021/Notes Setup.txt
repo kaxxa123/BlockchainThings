@@ -1,0 +1,113 @@
+
+
+
+https://github.com/tonlabs/TON-Solidity-Compiler/blob/master/API.md
+https://www.npmjs.com/package/tondev
+
+
+* Node.js >= 14.x installed
+* (optional) Docker >= 19.x installed
+* Solidity compiler requires VC++ Runtime on Windows. You can install it from the latest supported Visual C++ downloads.
+
+1) Enusre the right node version is in use
+> nvm use v14.4.0
+
+
+2) Install tondev (CHANGED!)
+FROM> npm install -g ton-dev-cli
+TO>   npm install -g tondev
+
+
+3) Start TON OS SE
+FROM> tondev start
+TO>   tondev se start
+
+    Error (the usual port 80 problem):
+    Pulling [tonlabs/local-node:0.28.10]... ✓
+    Creating tonlabs-tonos-se-alex... ✓
+    Starting tonlabs-tonos-se-alex...Error: (HTTP code 500) server error - Ports are not available: listen tcp 0.0.0.0:80: bind: An attempt was made to access a socket in a way forbidden by its access permissions.
+
+
+4) See docker images installed:
+> docker images
+> docker ps -a
+
+
+5) Switch ports to 8033
+> tondev se set --port 8033
+
+6) Start Ton OS
+> tondev se start
+
+7) Compile code:
+> tondev sol compile ListContract.sol
+
+    WARNING - A complete code review was not carried out. 
+    WARNING - Don't use, this is just a minimal quick and dirty fix!
+
+    Compilation will fail because of various changes in solidity support.
+    To get the compilation to work we changed the following lines:
+
+    a)  Specifically set the ton-solidity version. This is a very good change 
+        cause one should not confuse solidity developed for other chains.
+
+        FROM: pragma solidity ^0.6.0;
+        TO:   pragma ton-solidity ^0.51.0;
+
+
+    b) Change in return value of the <map>.fetch function which now retruns an 
+       optional value. Optional.get() throws if the value is empty which
+       is better than having to manually check a boolean "exists" flag.
+
+        FROM: (bool exists, ListElement elem) = items.fetch(itemPos);
+        FROM: require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item");
+
+        TO:   ListElement elem = items.fetch(itemPos).get();
+        TO:   require(elem.addr != address(0x0), ERR_UNINT_ITEM, "Uninitialized Item");
+
+
+8) Generate the JS wrapper code. This is now a separate command:
+> tondev js wrap ListContract.abi.json
+
+This command is equivalent to: 
+> tondev js wrap ListContract.abi.json -e commonjs
+
+    Note the wrapper being generated is different from the one we had in 2020
+    This wrapper is missing a rather useful class ListContractContract
+
+    Check this from:
+    https://github.com/kaxxa123/BlockchainThings/blob/master/FreeTONList/reference/ListContractContract.js
+
+    It is unclear whether there is a new automated way of creating this or whether it is now
+    up to the developers to code it manually. Because of this the test code will have to change such that
+    to directly call run() and runLocal().
+
+
+9) Main test file is now: ./test/testlist.js
+
+    Test libraries have now changed to:
+
+    # Install core package
+    # Install lib-node bridge if you write node js application
+    # And finally install appkit itself
+    > npm i --save @tonclient/core
+    > npm i --save @tonclient/lib-node
+    > npm i --save @tonclient/appkit
+
+    The AppKit is a good starting point for the NodeJS test:
+    https://tonlabs.github.io/appkit-js/
+    https://www.npmjs.com/package/@tonclient/appkit
+
+    The AppKit implementes the "giver" contract so there is no need to develop
+    this as we did in 2020. However I am still including its definition as taken from:
+    https://docs.ton.dev/86757ecb2/p/00f9a3-ton-os-se-giver
+
+    See:
+    /helpers/giver.js (not tested)
+
+    We now simply reference the giver on deployment:
+        let response = await account.deploy({useGiver: true});       
+
+    Apart for having no "giver" the test code now no longer relies on the contract wrapper
+    and directly makes calls to run() and runLocal() as per point 8)
+

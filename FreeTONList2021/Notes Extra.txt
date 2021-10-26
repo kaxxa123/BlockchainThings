@@ -1,0 +1,37 @@
+There exists three installation types:
+    TON OS SE (and TON OS EE?)
+    Validator Node
+    TON OS DApp Server
+
+===================
+TON OS SE
+ - a local blockchain for development and testing (Ganache analogue for TON)
+
+SE = Startup Edition
+
+TON OS SE Components
+    TON VM written in Rust
+    ArangoDB database,
+    GraphQL endpoint
+    Pre-deployed Giver
+
+===================
+Validator Node
+    Validation of PoS blocks
+    Verify transactions and add new blocks to BC
+
+AlexZ: Just like Ethereum a full node and a Validator nodes are different
+       components.
+
+===================
+TON OS DApp Server
+    A set of services allowing us to work with the TON BC
+    * TON Node 
+    * TON SDK endpoints (ArangoDB)
+    * Streaming platform Kafka, 
+    * TON GraphQL Server (aka Q-Server) for serving GraphQL queries to the database and 
+    * Nginx web-server.    
+
+AlexZ: This is like TON OS SE but its the "real thing" i.e. a live full node.
+===============================================================================================
+

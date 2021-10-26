@@ -1,24 +1,25 @@
-pragma solidity ^0.6.0;
+pragma ton-solidity ^0.51.0;
 
 //==========================================================
 // Author: Alexander Zammit
-// Date: 30th July 2020
-// LinkedIn: https://www.linkedin.com/in/alexzammit/
+// Date: 26th October 2021
 //
-// This code is being used to test the Free TON Solidity Compiler
-// Refer to articles:
+//  Initial code version was written for these articles
+//  However now many changes were introduced
+//  Refer to articles:
 //      Deploying & Running Smart Contracts on TON OS
 //      http://blockchainthings.io/article.aspx?i=6
 //
 //      Running TON OS on Windows
 //      http://blockchainthings.io/article.aspx?i=5
 //
-// Also related is this article:
+//  Also related is this article:
 //      Designing an Unbounded List in Solidity
 //      http://blockchainthings.io/article.aspx?i=4
 //
-// Compilation command:
-// tondev sol ListContract.sol -l js -L deploy
+//  Compilation command:
+//  tondev sol compile ListContract.sol
+//  tondev js wrap ListContract.abi.json
 //==========================================================
 
 contract ListContract {
@@ -81,11 +82,13 @@ contract ListContract {
     /// @dev Remove list item with given id
     /// @param id element to be removed
     function remove(uint256 id) external alwaysAccept {
-        (bool exists, ListElement elem) = items.fetch(id);
-
+        //This will throw if the item with "id" does not exist
+        //fine with us...
+        ListElement elem = items.fetch(id).get();
+        
         //Make sure we are deleting a valid item
         //Note this will also block deleting the root node (id == 0)
-        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item cannot be deleted");
+        require(elem.addr != address(0x0), ERR_UNINT_ITEM, "Uninitialized Item cannot be deleted");
 
         //Add log for deleted item
         emit EventItemDeleted(id, elem.addr);
@@ -113,9 +116,12 @@ contract ListContract {
         //Validate new item data
         require(addr != address(0x0), ERR_INVALID_ADDR, "Address cannot be zero");
 
+        //This will throw if the item with "id" does not exist
+        //fine with us...
+        ListElement elem = items.fetch(id).get();
+
         //Validate id is pointing to a valid list item element
-        (bool exists, ListElement elem) = items.fetch(id);
-        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item cannot be updated");
+        require(elem.addr != address(0x0), ERR_UNINT_ITEM, "Uninitialized Item cannot be updated");
 
         //Update item data
         items[id].addr = addr;
@@ -139,10 +145,14 @@ contract ListContract {
         if (itemPos == 0)
             return (new address[](0), 0);
 
+
+        //This will throw if the item with "id" does not exist
+        //fine with us...
+        ListElement elem = items.fetch(itemPos).get();
+
         //Validate reading position
         //This can happen if an item is deleted while traversing the list
-        (bool exists, ListElement elem) = items.fetch(itemPos);
-        require(exists && (elem.addr != address(0x0)), ERR_UNINT_ITEM, "Uninitialized Item");
+        require(elem.addr != address(0x0), ERR_UNINT_ITEM, "Uninitialized Item");
 
         //Determine number of elements to be returned
         //We count until:

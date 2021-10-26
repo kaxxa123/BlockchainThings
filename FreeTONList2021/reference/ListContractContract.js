@@ -1,284 +1,188 @@
-//
-// This file was generated using TON Labs developer tools.
-//
-
-const abi = {
-	"ABI version": 2,
-	"header": ["time"],
-	"functions": [
-		{
-			"name": "constructor",
-			"inputs": [
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "add",
-			"inputs": [
-				{"name":"addr","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "remove",
-			"inputs": [
-				{"name":"id","type":"uint256"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "update",
-			"inputs": [
-				{"name":"id","type":"uint256"},
-				{"name":"addr","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "read",
-			"inputs": [
-				{"name":"start","type":"uint256"},
-				{"name":"toRead","type":"uint256"}
-			],
-			"outputs": [
-				{"name":"addrList","type":"address[]"},
-				{"name":"next","type":"uint256"}
-			]
-		},
-		{
-			"name": "firstItem",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"value0","type":"uint256"}
-			]
-		},
-		{
-			"name": "lastItem",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"value0","type":"uint256"}
-			]
-		}
-	],
-	"data": [
-		{"key":1,"name":"nextItem","type":"uint256"},
-		{"key":2,"name":"totalItems","type":"uint256"}
-	],
-	"events": [
-		{
-			"name": "EventItemAdded",
-			"inputs": [
-				{"name":"id","type":"uint256"},
-				{"name":"addr","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "EventItemDeleted",
-			"inputs": [
-				{"name":"id","type":"uint256"},
-				{"name":"addr","type":"address"}
-			],
-			"outputs": [
-			]
-		}
-	]
+const ListContractContract = {
+    abi: {
+        "ABI version": 2,
+        "version": "2.2",
+        "header": [
+            "time"
+        ],
+        "functions": [
+            {
+                "name": "constructor",
+                "inputs": [],
+                "outputs": []
+            },
+            {
+                "name": "add",
+                "inputs": [
+                    {
+                        "name": "addr",
+                        "type": "address"
+                    }
+                ],
+                "outputs": []
+            },
+            {
+                "name": "remove",
+                "inputs": [
+                    {
+                        "name": "id",
+                        "type": "uint256"
+                    }
+                ],
+                "outputs": []
+            },
+            {
+                "name": "update",
+                "inputs": [
+                    {
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "addr",
+                        "type": "address"
+                    }
+                ],
+                "outputs": []
+            },
+            {
+                "name": "read",
+                "inputs": [
+                    {
+                        "name": "start",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "toRead",
+                        "type": "uint256"
+                    }
+                ],
+                "outputs": [
+                    {
+                        "name": "addrList",
+                        "type": "address[]"
+                    },
+                    {
+                        "name": "next",
+                        "type": "uint256"
+                    }
+                ]
+            },
+            {
+                "name": "firstItem",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "value0",
+                        "type": "uint256"
+                    }
+                ]
+            },
+            {
+                "name": "lastItem",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "value0",
+                        "type": "uint256"
+                    }
+                ]
+            },
+            {
+                "name": "nextItem",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "nextItem",
+                        "type": "uint256"
+                    }
+                ]
+            },
+            {
+                "name": "totalItems",
+                "inputs": [],
+                "outputs": [
+                    {
+                        "name": "totalItems",
+                        "type": "uint256"
+                    }
+                ]
+            }
+        ],
+        "data": [],
+        "events": [
+            {
+                "name": "EventItemAdded",
+                "inputs": [
+                    {
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "addr",
+                        "type": "address"
+                    }
+                ],
+                "outputs": []
+            },
+            {
+                "name": "EventItemDeleted",
+                "inputs": [
+                    {
+                        "name": "id",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "addr",
+                        "type": "address"
+                    }
+                ],
+                "outputs": []
+            }
+        ],
+        "fields": [
+            {
+                "name": "_pubkey",
+                "type": "uint256"
+            },
+            {
+                "name": "_timestamp",
+                "type": "uint64"
+            },
+            {
+                "name": "_constructorFlag",
+                "type": "bool"
+            },
+            {
+                "name": "nextItem",
+                "type": "uint256"
+            },
+            {
+                "name": "totalItems",
+                "type": "uint256"
+            },
+            {
+                "components": [
+                    {
+                        "name": "prev",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "next",
+                        "type": "uint256"
+                    },
+                    {
+                        "name": "addr",
+                        "type": "address"
+                    }
+                ],
+                "name": "items",
+                "type": "map(uint256,tuple)"
+            }
+        ]
+    },
+    tvc: "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",
+    code: "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",
+    codeHash: "2f276fe7049b39911f73861877fd579651cd9aeddf68964d741e80b5325a607e",
 };
-
-const pkg = {
-    abi,
-    imageBase64: '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',
-};
-
-class ListContractContract {
-    /**
-    * @param {TONClient} client
-    * @param {string} address can be null if contract will be deployed
-    * @param {TONKeyPairData} keys
-    */
-    constructor(client, address, keys) {
-        this.client = client;
-        this.address = address;
-        this.keys = keys;
-        this.package = pkg;
-        this.abi = abi;
-    }
-
-    /**
-     * @param {object} initParams
-     * @param {string} initParams.nextItem (uint256)
-     * @param {string} initParams.totalItems (uint256)
-     */
-    async deploy(initParams) {
-        if (!this.keys) {
-            this.keys = await this.client.crypto.ed25519Keypair();
-        }
-        this.address = (await this.client.contracts.deploy({
-            package: pkg,
-            constructorParams: {},
-            initParams,
-            keyPair: this.keys,
-        })).address;
-    }
-
-    /**
-    * @param {string} functionName
-    * @param {object} input
-    * @return {Promise.<object>}
-    */
-    async run(functionName, input) {
-        const result = await this.client.contracts.run({
-            address: this.address,
-            functionName,
-            abi,
-            input,
-            keyPair: this.keys,
-        });
-        return result.output;
-    }
-
-   /**
-    * @param {string} functionName
-    * @param {object} input
-    * @return {Promise.<object>}
-    */
-    async runLocal(functionName, input) {
-        const result = await this.client.contracts.runLocal({
-            address: this.address,
-            functionName,
-            abi,
-            input,
-            keyPair: this.keys,
-        });
-        return result.output;
-    }
-
-    /**
-     * @param {object} params
-     * @param {string} params.addr (address)
-     */
-    add(params) {
-        return this.run('add', params);
-    }
-
-    /**
-     * @param {object} params
-     * @param {string} params.addr (address)
-     */
-    addLocal(params) {
-        return this.runLocal('add', params);
-    }
-
-    /**
-     * @param {object} params
-     * @param {string} params.id (uint256)
-     */
-    remove(params) {
-        return this.run('remove', params);
-    }
-
-    /**
-     * @param {object} params
-     * @param {string} params.id (uint256)
-     */
-    removeLocal(params) {
-        return this.runLocal('remove', params);
-    }
-
-    /**
-     * @param {object} params
-     * @param {string} params.id (uint256)
-     * @param {string} params.addr (address)
-     */
-    update(params) {
-        return this.run('update', params);
-    }
-
-    /**
-     * @param {object} params
-     * @param {string} params.id (uint256)
-     * @param {string} params.addr (address)
-     */
-    updateLocal(params) {
-        return this.runLocal('update', params);
-    }
-
-    /**
-     * @typedef ListContractContract_read
-     * @type {object}
-     * @property {string[]} addrList  (address[])
-     * @property {string} next  (uint256)
-     */
-
-    /**
-     * @param {object} params
-     * @param {string} params.start (uint256)
-     * @param {string} params.toRead (uint256)
-     * @return {Promise.<ListContractContract_read>}
-     */
-    read(params) {
-        return this.run('read', params);
-    }
-
-    /**
-     * @param {object} params
-     * @param {string} params.start (uint256)
-     * @param {string} params.toRead (uint256)
-     * @return {Promise.<ListContractContract_read>}
-     */
-    readLocal(params) {
-        return this.runLocal('read', params);
-    }
-
-    /**
-     * @typedef ListContractContract_firstItem
-     * @type {object}
-     * @property {string} value0  (uint256)
-     */
-
-    /**
-     * @return {Promise.<ListContractContract_firstItem>}
-     */
-    firstItem() {
-        return this.run('firstItem', {});
-    }
-
-    /**
-     * @return {Promise.<ListContractContract_firstItem>}
-     */
-    firstItemLocal() {
-        return this.runLocal('firstItem', {});
-    }
-
-    /**
-     * @typedef ListContractContract_lastItem
-     * @type {object}
-     * @property {string} value0  (uint256)
-     */
-
-    /**
-     * @return {Promise.<ListContractContract_lastItem>}
-     */
-    lastItem() {
-        return this.run('lastItem', {});
-    }
-
-    /**
-     * @return {Promise.<ListContractContract_lastItem>}
-     */
-    lastItemLocal() {
-        return this.runLocal('lastItem', {});
-    }
-
-}
-
-ListContractContract.package = pkg;
-
-module.exports = ListContractContract;
+module.exports = { ListContractContract };
