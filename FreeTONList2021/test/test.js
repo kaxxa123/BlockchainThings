@@ -1,76 +1,82 @@
-const { TONClient } = require('ton-client-node-js')          //npm install ton-client-node-js
-const Giver         = require('./helpers/giver')             //Our Giver contract to get free crypto
+const { TonClient, signerKeys } = require("@tonclient/core");
+const { libNode } = require("@tonclient/lib-node");
+const { Account } = require("@tonclient/appkit");
+
 const ListContract  = require('../ListContractContract')     //Our Auto-Generated smart contract wrapper
 
-//public/private key pair generated using:tondev keys
+TonClient.useBinaryLibrary(libNode);
+
+//public/private key pair generated using: newkeys.js
 //if we fix the key pair, we always get the same smart contract address
 const fixedKeys = 
 {
-    "public": "b5a72c47b8cdce84bfe1a6814af7402d53c8377c46ac4a6293b16ed23f1f73de",
-    "secret": "2d98b095f71fe831966c0d9dae493b95dac251e13f841c6fa4e32de522bd27eb"
+    "public": "10881235a2468466b16c924b90bf59eeac7e39cb5d091c46ce79f4435fbdfd44",
+    "secret": "03d7ee6aff563c7335dd363d3de8553f42c7090481db4a6cc00048cbabeb2a07"
 }
 
 async function main(client) {
-    //Get a unique key pair to make sure we test with a freshly deployed contract
-    const keys = await client.crypto.ed25519Keypair();
+    // Generate new keys pair for new account.
+    const keys = await client.crypto.generate_random_sign_keys();
+    console.log();
+    console.log(`Public: ${keys.public}`)
+    console.log(`Secret: ${keys.secret}`)
 
-    //Load the contract with credit
-    const addr = await Giver.load_credit(
-            client, 
-            ListContract.package, 
-            {}, 
-            keys, 
-            100000000
-    )
-    console.log(`Contract Address before deployment: ${addr}`)
+    const account = new Account(ListContract.ListContractContract, 
+                                { signer: signerKeys(keys),
+                                  client,
+                                });
 
-    //Deploy
-    const list = new ListContract(client, addr, keys)
-    await list.deploy();
-    console.log(`Contract Deployed: ${list.address}`)
+    const address = await account.getAddress();
+    console.log();
+    console.log(`Future address of the contract will be: ${address}`);
 
-    //Run Tests
-    await list.add({addr: '0:0000000000000000000000000000000000000000000000000000000000000001'});
-    await list.add({addr: '0:0000000000000000000000000000000000000000000000000000000000000002'});
-    await list.add({addr: '0:0000000000000000000000000000000000000000000000000000000000000003'});
-    await list.add({addr: '0:0000000000000000000000000000000000000000000000000000000000000004'});
-    await list.add({addr: '0:0000000000000000000000000000000000000000000000000000000000000005'});
+    let response = await account.deploy({useGiver: true});       
+    console.log();
+    console.log("Deployment:");
+    console.log(response);
+    console.log("* * * * * * * * * *");
 
-    let first = await list.firstItemLocal()
-    let last = await list.lastItemLocal()
-    console.log(`First Item Id ${first.value0}`)
-    console.log(`Last Item Id  ${last.value0}`)
+    response = await account.run("add", {addr: '0:0000000000000000000000000000000000000000000000000000000000000001'});
+    console.log();
+    console.log("Add1:");
+    console.log(response);
+    console.log("* * * * * * * * * *");
+
+    await account.run("add", {addr: '0:0000000000000000000000000000000000000000000000000000000000000002'});
+    await account.run("add", {addr: '0:0000000000000000000000000000000000000000000000000000000000000003'});
+    await account.run("add", {addr: '0:0000000000000000000000000000000000000000000000000000000000000004'});
+    await account.run("add", {addr: '0:0000000000000000000000000000000000000000000000000000000000000005'});
+            
+    let first = await account.runLocal("firstItem", {});
+    let last  = await account.runLocal("lastItem", {});
+    console.log(`First Item Id: ${first.decoded.output.value0}`)
+    console.log(`Last Item Id   ${last.decoded.output.value0}`)
     console.log();
 
-    let id = Number(first.value0);
-    await list.remove({id: id})
-    await list.remove({id: (id+2)})
-    await list.remove({id: (id+4)})
+    let id = Number(first.decoded.output.value0);
+    await account.run("remove", {id: id})
+    await account.run("remove", {id: (id+2)})
+    await account.run("remove", {id: (id+4)})
 
-    first = await list.firstItemLocal()
-    last = await list.lastItemLocal()
-    console.log(`First Item Id ${first.value0}`)
-    console.log(`Last Item Id  ${last.value0}`)
+    first = await account.runLocal("firstItem", {});
+    last  = await account.runLocal("lastItem", {});
+    console.log(`First Item Id: ${first.decoded.output.value0}`)
+    console.log(`Last Item Id   ${last.decoded.output.value0}`)
     console.log();
 
-    let listVals = await list.readLocal({start: 0, toRead: 0})
-    console.log(`Next Read Pos: ${listVals.next}`)
-    console.log(`Addr List Out: ${listVals.addrList}`)
+    let listVals = await account.runLocal("read", {start: 0, toRead: 0})
+    console.log(`Next Read Pos: ${listVals.decoded.output.next}`)
+    console.log(`Addr List Out: ${listVals.decoded.output.addrList}`)
 }
 
 (async () => {
+    const endpoint = "http://localhost:8033"; 
+    const client = new TonClient({ network: { endpoints: [endpoint] } });
     try {
-
-        //Connect to Local Node. Note the port setting
-        //matches our local TON OS port.
-        const client = await TONClient.create({
-                                    servers: ['http://localhost:8033'],
-                                });
-
         await main(client);
-    	process.exit(0);
-    } 
-    catch (error) {
-        console.error(error);
+    } catch (err) {
+        console.error(err);
+    } finally {
+        client.close();
     }
 })();
