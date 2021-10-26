@@ -83,7 +83,7 @@ This command is equivalent to:
     to directly call run() and runLocal().
 
 
-9) Main test file is now: ./test/testlist.js
+9) Main test file is: ./test/test.js
 
     Test libraries have now changed to:
 
