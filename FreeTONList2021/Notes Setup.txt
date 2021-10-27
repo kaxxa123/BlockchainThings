@@ -10,7 +10,35 @@ https://www.npmjs.com/package/tondev
 * Solidity compiler requires VC++ Runtime on Windows. You can install it from the latest supported Visual C++ downloads.
 
 1) Enusre the right node version is in use
-> nvm use v14.4.0
+
+    With node  v14.4.0 I ran into a problem on running:
+    > npm install -g tondev
+
+    This was fixed by moving to node v14.18.1
+
+        Error dump for v14.4.0
+
+        Downloading from https://binaries.tonlabs.io/tonclient_1_24_nodejs_addon_x64-win32.gz to C:\Program Files\nodejs\node_modules\tondev\node_modules\@tonclient\lib-node\tonclient.node ...Assertion failed: new_time >= loop->time, file c:\ws\deps\uv\src\win\core.c, line 309
+        npm ERR! code ELIFECYCLE
+        npm ERR! errno 3221226505
+        npm ERR! @tonclient/lib-node@1.24.0 postinstall: `node install.js`
+        npm ERR! Exit status 3221226505
+        npm ERR!
+        npm ERR! Failed at the @tonclient/lib-node@1.24.0 postinstall script.
+        npm ERR! This is probably not a problem with npm. There is likely additional logging output above.
+
+        npm ERR! A complete log of this run can be found in:
+        npm ERR!     C:\Users\Alex.WDEV\AppData\Roaming\npm-cache\_logs\2021-10-27T09_25_09_078Z-debug.log
+
+
+> nvm use v14.18.1
+
+
+1.5) Watch out for other dependencies:
+    Python 2.7.18
+    cmake
+    Visual Studio Build Tools
+        + Desktop Development with C++
 
 
 2) Install tondev (CHANGED!)
@@ -22,10 +50,11 @@ TO>   npm install -g tondev
 FROM> tondev start
 TO>   tondev se start
 
-    Error (the usual port 80 problem):
-    Pulling [tonlabs/local-node:0.28.10]... ✓
-    Creating tonlabs-tonos-se-alex... ✓
-    Starting tonlabs-tonos-se-alex...Error: (HTTP code 500) server error - Ports are not available: listen tcp 0.0.0.0:80: bind: An attempt was made to access a socket in a way forbidden by its access permissions.
+    Usual port erro may come up but this will be solved next. Error dump:
+        Error (the usual port 80 problem):
+        Pulling [tonlabs/local-node:0.28.10]... ✓
+        Creating tonlabs-tonos-se-alex... ✓
+        Starting tonlabs-tonos-se-alex...Error: (HTTP code 500) server error - Ports are not available: listen tcp 0.0.0.0:80: bind: An attempt was made to access a socket in a way forbidden by its access permissions.
 
 
 4) See docker images installed:
