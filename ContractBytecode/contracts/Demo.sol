@@ -14,5 +14,4 @@ contract Demo {
     function increase() external {
         ++counter;
     }
-
 }
