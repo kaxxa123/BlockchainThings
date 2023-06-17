@@ -6,7 +6,7 @@ The code runs against any EVM chain. The project is configured to use Avalanche 
 
  * [Avalanche Fuji Snowtrace Explorer](https://testnet.snowtrace.io/)
 
- * [Avalanche Fuji Faucet](https://faucet.avax.network/)
+ * [Avalanche Fuji Faucet](https://core.app/tools/testnet-faucet/?token=C)
 
 <BR />
 
@@ -28,7 +28,7 @@ npx hardhat compile
 
 ## Deploy and Run the Contract
 
-Create a `.env` file with a single value `PRIVATE_KEY_1`. Use the [.env_template](./.env_template) as a reference. `PRIVATE_KEY_1` must contain the private key for an account having some FUJI AVAX. Ask for it at the [faucet](https://faucet.avax.network/).
+Create a `.env` file with a single value `PRIVATE_KEY_1`. Use the [.env_template](./.env_template) as a reference. `PRIVATE_KEY_1` must contain the private key for an account having some FUJI AVAX. Ask for it at the [faucet](https://core.app/tools/testnet-faucet/?token=C).
 
 
 ```BASH
@@ -237,7 +237,7 @@ idx     bytecode    opcodes         stack               description
 This code checked the require condition in: <BR />
 `require (start > 100, "Too small")`
 
-If the check failed, do code would not jump and the code sequence that follows reverts.
+If the check failed, the code would not jump and the code sequence that follows reverts.
 
 Stack Values: <BR />
 `c8` - ctr input parameter value
