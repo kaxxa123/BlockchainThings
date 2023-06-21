@@ -11,7 +11,7 @@ The code runs against any EVM chain. The project is configured to use Avalanche 
 <BR />
 
 
-## Clone and Compile the Contract
+## Clone and Install Dependencies
 
 A hardhat project to compile the example code:
 
@@ -20,18 +20,18 @@ git clone git@github.com:kaxxa123/BlockchainThings.git
 cd ./BlockchainThings/ContractBytecode
 
 npm install
-npx hardhat compile
 ```
 
 <BR />
 
 
-## Deploy and Run the Contract
+## Compile, Deploy and Run the Contract
 
 Create a `.env` file with a single value `PRIVATE_KEY_1`. Use the [.env_template](./.env_template) as a reference. `PRIVATE_KEY_1` must contain the private key for an account having some FUJI AVAX. Ask for it at the [faucet](https://core.app/tools/testnet-faucet/?token=C).
 
 
 ```BASH
+npx hardhat compile
 npx hardhat console --network fuji
 ```
 
